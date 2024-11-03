@@ -30,7 +30,7 @@ const handler = async (event, context) => {
         const url = new URL(event.rawUrl);
         const min = parseInt(url.searchParams.get('min') || '0', 10);
         const max = parseInt(url.searchParams.get('max') || '99', 10);
-        const wordsStr = fs.readFileSync('words.txt', 'utf-8');
+        const wordsStr = fs.readFileSync('./words.txt', 'utf-8');
         let wordsArray = wordsStr.split('\n');
         if (min !== 0 || max !== 99) {
             wordsArray = wordsArray.filter(word => {
