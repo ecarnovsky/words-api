@@ -8,24 +8,37 @@ const handler: Handler = async (event, context) => {
         const url = new URL(event.rawUrl)
         const min = parseInt(url.searchParams.get('min') || '0', 10);
         const max = parseInt(url.searchParams.get('max') || '99', 10);
+        let numberOfWords = parseInt(url.searchParams.get('number') || '1', 10);
 
-
-
-        const wordsStr = fs.readFileSync('./words.txt', 'utf-8')
-        let wordsArray = wordsStr.split('\n');
-        if(min !== 0 || max !== 99){
-            wordsArray = wordsArray.filter(word =>{
-                word = word.replace('\r', '').trim()
-                return word.length >= min && word.length <= max
-            })
+        if (numberOfWords > 30){
+            numberOfWords = 30
         }
-        let randomWord = wordsArray[Math.floor(Math.random() * (wordsArray.length))]
-        randomWord = randomWord.replace('\r', '').trim()
+
+        let wordsToReturn: string[] = []
+
+        const allWordsStr = fs.readFileSync('./words.txt', 'utf-8')
+        console.log(allWordsStr)
+        let allWordsArray:  string[] = allWordsStr.split('\r\n');
+        if(min !== 0 || max !== 99){
+            allWordsArray = allWordsArray.filter(word =>
+                word.length >= min && word.length <= max
+            )
+        }
+
+        allWordsArray = shuffle(allWordsArray)
+        
+        for(let i = 0; i < numberOfWords; i++){
+            let randomWord: string | undefined = allWordsArray.pop()
+            if (randomWord !== undefined) {
+                wordsToReturn.push(randomWord)
+            }
+        }
+
 
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ word: randomWord }),
+            body: JSON.stringify({ words: wordsToReturn }),
         }
 
     } catch (err) {
@@ -36,5 +49,13 @@ const handler: Handler = async (event, context) => {
         }
     }
 };
+
+function shuffle(array: string[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
 
 export { handler };
