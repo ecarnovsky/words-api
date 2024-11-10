@@ -18,7 +18,7 @@ const handler: Handler = async (event, context) => {
 
         const allWordsStr = fs.readFileSync('./words.txt', 'utf-8')
 
-        let allWordsArray:  string[] = allWordsStr.split('\r\n');
+        let allWordsArray:  string[] = allWordsStr.split(/\r?\n/);
         if(min !== 0 || max !== 99){
             allWordsArray = allWordsArray.filter(word =>
                 word.length >= min && word.length <= max
